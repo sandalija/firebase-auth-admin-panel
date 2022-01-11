@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from "react";
-import GoogleLogin from "react-google-login";
+import GoogleLogin, { useGoogleLogin } from "react-google-login";
 import Script from "next/script";
 import { action } from "mobx";
 import { Google } from "../contexts/google-user";
 
 const LoginPage = (props: { google: Google }) => {
+  const [token, setToken] = useState<string>("");
   const handleLogin = (resp: any) => {
-    action(() => {
-      props.google.setUser(resp);
+    console.log("login", resp);
+    window.localStorage.setItem("jwt", resp.tokenId);
+  };
+
+  const handlePress = () => {
+    fetch("/api/create-user", {
+      headers: { authorization: window.localStorage.getItem("jwt") },
     });
   };
 
@@ -21,6 +27,7 @@ const LoginPage = (props: { google: Google }) => {
         }}
         onFailure={(r) => console.log(r)}
       />
+      <button onClick={handlePress}>Api call!</button>
     </>
   );
 };
