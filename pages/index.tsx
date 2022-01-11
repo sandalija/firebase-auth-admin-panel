@@ -24,7 +24,7 @@ export default function Home() {
         Hola
         <div>
           {routes.map((route) => (
-            <a href={route.link}>{`Go to ${route.title}`}</a>
+            <a key={route.link} href={route.link}>{`Go to ${route.title}`}</a>
           ))}
         </div>
         <div>Logged as: </div>
