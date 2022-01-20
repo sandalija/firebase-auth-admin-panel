@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { OAuth2Client } from "google-auth-library";
-import jwt from "jsonwebtoken";
+import { initializeApp, refreshToken } from "firebase-admin/app";
+import { initFirebase } from "../../lib/firebase/init";
 
 export default async function handler(
   req: NextApiRequest,
@@ -8,19 +9,23 @@ export default async function handler(
 ) {
   try {
     const token = req.headers.authorization;
+    console.log(token, !token);
+    if (!token) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
     console.log("token", process.env);
 
-    const oauth2Client = new OAuth2Client(
-      process.env.GOOGLE_OAUTH_PUBLIC,
-      process.env.GOOGLE_OAUTH_PRIVATE,
-      process.env.HOST
-    );
-    const ticket = await oauth2Client.verifyIdToken({
-      idToken: token,
-      audience: process.env.GOOGLE_OAUTH_PUBLIC,
-    });
+    try {
+      const res = await initFirebase(token);
 
-    await res.status(200).json({ ticket });
+      console.log("Firebase", res);
+    } catch (e) {
+      console.error(e);
+      return res.status(500).send(e);
+    }
+
+    res.status(200).json("done");
   } catch (error) {
     console.error(error);
     res.status(500).json({ error });

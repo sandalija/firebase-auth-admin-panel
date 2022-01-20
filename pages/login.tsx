@@ -8,12 +8,13 @@ const LoginPage = (props: { google: Google }) => {
   const [token, setToken] = useState<string>("");
   const handleLogin = (resp: any) => {
     console.log("login", resp);
-    window.localStorage.setItem("jwt", resp.tokenId);
+    window.localStorage.setItem("idToken", resp.tokenId);
+    window.localStorage.setItem("accessToken", resp.accessToken);
   };
 
   const handlePress = () => {
     fetch("/api/create-user", {
-      headers: { authorization: window.localStorage.getItem("jwt") },
+      headers: { authorization: window.localStorage.getItem("idToken") },
     });
   };
 
